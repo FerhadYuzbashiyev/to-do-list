@@ -15,8 +15,8 @@ class UpdateTaskData
     public static function fromArray(UpdateTaskRequest $data): self
     {
         return new self(
-            title: $data['title'],
-            description: $data['description'],
+            title: $data['title'] ?? null,
+            description: $data['description'] ?? null,
         );
     }
     

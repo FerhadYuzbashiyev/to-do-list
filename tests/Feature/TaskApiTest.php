@@ -13,7 +13,7 @@ class TaskApiTest extends TestCase
 
     public function test_can_create_task()
     {
-        $response = $this->postJson('/api/task', [
+        $response = $this->postJson('/api/tasks', [
             'title' => 'Test Task',
             'description' => 'Test description'
         ]);
@@ -29,7 +29,7 @@ class TaskApiTest extends TestCase
     {
         Task::factory(3)->create();
 
-        $response = $this->getJson('/api/task');
+        $response = $this->getJson('/api/tasks');
 
         $response->assertStatus(200)->assertJsonCount(3, 'data');
     }
@@ -38,7 +38,7 @@ class TaskApiTest extends TestCase
     {
         $task = Task::factory()->create();
 
-        $response = $this->getJson("/api/task/{$task->id}");
+        $response = $this->getJson("/api/tasks/{$task->id}");
 
         $response->assertStatus(200)->assertJsonFragment([
             'title' => $task->title
@@ -49,7 +49,7 @@ class TaskApiTest extends TestCase
     {
         $task = Task::factory()->create();
 
-        $response = $this->putJson("/api/task/{$task->id}", [
+        $response = $this->putJson("/api/tasks/{$task->id}", [
             'title' => 'Updated'
         ]);
 
@@ -65,7 +65,7 @@ class TaskApiTest extends TestCase
     {
         $task = Task::factory()->create();
 
-        $response = $this->deleteJson("/api/task/{$task->id}");
+        $response = $this->deleteJson("/api/tasks/{$task->id}");
 
         $response->assertStatus(200);
 
@@ -78,13 +78,13 @@ class TaskApiTest extends TestCase
     {
         $task = Task::factory()->create();
 
-        $response = $this->putJson("/api/task/{$task->id}/complete");
+        $response = $this->putJson("/api/tasks/{$task->id}/complete");
 
         $response->assertStatus(200);
 
         $this->assertDatabaseHas('tasks', [
             'id' => $task->id,
-            'status' => 'COMPLETED'
+            'status' => Task::STATUS_COMPLETED
         ]);
     }
 
