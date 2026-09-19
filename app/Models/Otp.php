@@ -2,26 +2,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Model;
 
-class Task extends Model
+class Otp extends Model
 {
     use HasFactory;
-
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_COMPLETED = 'completed';
-
+    
     protected $fillable = [
+        'otp_code',
         'user_id',
-        'title',
-        'description',
-        'status'
+        'expires_at'
     ];
 
+    protected $casts =[
+        'expires_at' => 'datetime'
+    ];
+    
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function userId(): BelongsTo
+    {
+        return $this->user();
     }
 }
