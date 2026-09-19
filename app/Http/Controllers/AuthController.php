@@ -4,26 +4,32 @@ namespace App\Http\Controllers;
 
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Request;
+use OpenApi\Annotations as OA;
+
 use App\Http\Requests\Auth\UpdateUserRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\VerifyOtpRequest;
+
 use App\DTO\Auth\CreateUserData;
 use App\DTO\Auth\UpdateUserData;
+
 use App\Http\Resources\User\UserResource;
+
 use App\Models\User;
+
 use App\Services\AuthService;
 use App\Services\OtpService;
-use App\Services\SubscriptionService;
-use Illuminate\Http\Request;
-use OpenApi\Annotations as OA;
 
 class AuthController extends Controller
 {
     public function __construct(
         private OtpService $otpService,
         private AuthService $authService,
-    ){}
-    
+    ) {
+    }
+
     /**
      * @OA\Get(
      *   path="/auth/me",
@@ -37,8 +43,10 @@ class AuthController extends Controller
     public function getUser(Request $request)
     {
         $user = $request->user();
+
         return new UserResource($user);
     }
+
     /**
      * @OA\Post(
      *   path="/auth/register",
@@ -47,29 +55,30 @@ class AuthController extends Controller
      *   @OA\RequestBody(
      *     required=true,
      *     @OA\JsonContent(
-     *       required={"username","first_name","last_name","email","password","phone_number"},
+     *       required={"username","email","password"},
      *       @OA\Property(property="username", type="string"),
-     *       @OA\Property(property="first_name", type="string"),
-     *       @OA\Property(property="last_name", type="string"),
      *       @OA\Property(property="email", type="string", format="email"),
-     *       @OA\Property(property="password", type="string", format="password"),
-     *       @OA\Property(property="phone_number", type="string")
+     *       @OA\Property(property="password", type="string", format="password")
      *     )
      *   ),
-     *   @OA\Response(response=201, description="OTP sent")
+     *   @OA\Response(response=201, description="OTP sent"),
+     *   @OA\Response(response=422, description="Validation error")
      * )
      */
     public function register(RegisterRequest $request)
     {
         $dto = CreateUserData::fromArray($request->validated());
+
         $user = $this->authService->createUser($dto);
+
         $this->otpService->create_otp_and_send($user);
 
         return response()->json([
             'message' => 'OTP sent to your email',
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ], Response::HTTP_CREATED);
     }
+
     /**
      * @OA\Post(
      *   path="/auth/login",
@@ -84,7 +93,8 @@ class AuthController extends Controller
      *     )
      *   ),
      *   @OA\Response(response=200, description="OTP sent"),
-     *   @OA\Response(response=401, description="Invalid credentials")
+     *   @OA\Response(response=401, description="Invalid credentials"),
+     *   @OA\Response(response=422, description="Validation error")
      * )
      */
     public function login(LoginRequest $request)
@@ -95,15 +105,50 @@ class AuthController extends Controller
                 $request->password
             );
         } catch (ValidationException $e) {
-            return response()->json($e->errors(), Response::HTTP_UNAUTHORIZED);
+            return response()->json(
+                $e->errors(),
+                Response::HTTP_UNAUTHORIZED
+            );
         }
 
         $this->otpService->create_otp_and_send($user);
 
         return response()->json([
-            'message' => 'OTP sent to your email'
+            'message' => 'OTP sent to your email',
+            'user_id' => $user->id,
         ], Response::HTTP_OK);
     }
+
+    /**
+     * @OA\Post(
+     *   path="/auth/verify-otp",
+     *   tags={"Auth"},
+     *   summary="Verify OTP and receive access token",
+     *   @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(
+     *       required={"user_id","code"},
+     *       @OA\Property(property="user_id", type="integer"),
+     *       @OA\Property(property="code", type="string", example="1234")
+     *     )
+     *   ),
+     *   @OA\Response(response=200, description="OTP verified"),
+     *   @OA\Response(response=422, description="Invalid or expired OTP")
+     * )
+     */
+    public function verifyOtp(VerifyOtpRequest $request)
+    {
+        $token = $this->otpService->verify_and_get_token(
+            $request->user_id,
+            $request->code
+        );
+
+        return response()->json([
+            'message' => 'OTP verified successfully',
+            'token' => $token,
+        ], Response::HTTP_OK);
+    }
+
     /**
      * @OA\Post(
      *   path="/auth/logout",
@@ -116,12 +161,13 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        $suspectToken = $request->user()->currentAccessToken()->delete();
+        $request->user()->currentAccessToken()->delete();
+
         return response()->json([
             'message' => 'Logged out successfully!',
-            'deleted token' => $suspectToken
         ], Response::HTTP_OK);
     }
+
     /**
      * @OA\Post(
      *   path="/auth/update",
@@ -134,11 +180,8 @@ class AuthController extends Controller
      *       mediaType="multipart/form-data",
      *       @OA\Schema(
      *         @OA\Property(property="username", type="string"),
-     *         @OA\Property(property="first_name", type="string"),
-     *         @OA\Property(property="last_name", type="string"),
      *         @OA\Property(property="email", type="string", format="email"),
      *         @OA\Property(property="password", type="string", format="password"),
-     *         @OA\Property(property="phone_number", type="string"),
      *         @OA\Property(property="image", type="string", format="binary")
      *       )
      *     )
@@ -150,13 +193,21 @@ class AuthController extends Controller
      */
     public function update(UpdateUserRequest $request)
     {
-        $dto = UpdateUserData::fromValidatedPayload($request->validated());
-        $updatedUser = $this->authService->updateUser($request->user(), $dto);
-        return new UserResource($updatedUser); 
+        $dto = UpdateUserData::fromValidatedPayload(
+            $request->validated()
+        );
+
+        $updatedUser = $this->authService->updateUser(
+            $request->user(),
+            $dto
+        );
+
+        return new UserResource($updatedUser);
     }
+
     /**
      * @OA\Delete(
-     *   path="/auth/destroy",
+     *   path="/auth/delete",
      *   tags={"Auth"},
      *   summary="Delete current user",
      *   security={{"sanctum":{}}},
@@ -167,23 +218,39 @@ class AuthController extends Controller
     public function destroy(Request $request)
     {
         $this->authService->deleteUser($request->user());
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+
+        return response()->json(
+            null,
+            Response::HTTP_NO_CONTENT
+        );
     }
+
     /**
      * @OA\Delete(
-     *   path="/admin/auth/{user}",
+     *   path="/admin/users/{user}",
      *   tags={"Auth"},
      *   summary="Admin deletes user",
      *   security={{"sanctum":{}}},
-     *   @OA\Parameter(name="user", in="path", required=true, @OA\Schema(type="integer")),
+     *   @OA\Parameter(
+     *     name="user",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
      *   @OA\Response(response=204, description="User deleted"),
-     *   @OA\Response(response=403, description="Forbidden")
+     *   @OA\Response(response=403, description="Forbidden"),
+     *   @OA\Response(response=404, description="User not found")
      * )
      */
     public function adminDestroy(User $user)
     {
         $this->authorize('delete', $user);
+
         $this->authService->deleteUser($user);
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+
+        return response()->json(
+            null,
+            Response::HTTP_NO_CONTENT
+        );
     }
 }
