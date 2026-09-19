@@ -17,7 +17,7 @@ class CreateUserData
         return new self(
             username: $data['username'],
             email: $data['email'],
-            password: $data['hashed_password'],
+            hashed_password: $data['hashed_password'],
             isVerified: (bool) ($data['is_verified'] ?? false),
             role: $data['role'] ?? 'user',
         );

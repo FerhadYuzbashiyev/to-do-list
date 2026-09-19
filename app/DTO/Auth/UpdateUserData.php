@@ -9,7 +9,7 @@ class UpdateUserData
         public ?string $email,
     ) {}
 
-    public static function fromValidatedPayload(array $data, ?UploadedFile $image): self
+    public static function fromValidatedPayload(array $data): self
     {
         return new self(
             username: $data['username'] ?? null,

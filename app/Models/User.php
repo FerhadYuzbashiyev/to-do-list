@@ -34,4 +34,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Task::class);
     }
+
+    public function getAuthPassword(): string
+    {
+        return $this->hashed_password;
+    }
 }

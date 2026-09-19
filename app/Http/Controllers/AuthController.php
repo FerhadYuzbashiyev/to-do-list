@@ -22,7 +22,6 @@ class AuthController extends Controller
     public function __construct(
         private OtpService $otpService,
         private AuthService $authService,
-        private SubscriptionService $subscriptionService
     ){}
     
     /**
@@ -64,7 +63,6 @@ class AuthController extends Controller
     {
         $dto = CreateUserData::fromArray($request->validated());
         $user = $this->authService->createUser($dto);
-        $this->subscriptionService->setBasicSubscription($user);
         $this->otpService->create_otp_and_send($user);
 
         return response()->json([
@@ -152,7 +150,7 @@ class AuthController extends Controller
      */
     public function update(UpdateUserRequest $request)
     {
-        $dto = UpdateUserData::fromValidatedPayload($request->validated(), $request->file('image'));
+        $dto = UpdateUserData::fromValidatedPayload($request->validated());
         $updatedUser = $this->authService->updateUser($request->user(), $dto);
         return new UserResource($updatedUser); 
     }

@@ -1,12 +1,11 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\User;
 use App\DTO\Auth\CreateUserData;
 use App\DTO\Auth\UpdateUserData;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AuthService
@@ -15,11 +14,12 @@ class AuthService
     {
         $user = User::where('email', $email)->first();
 
-        if(!$user || !Hash::check($password, $user->password)) {
+        if (!$user || !Hash::check($password, $user->hashed_password)) {
             throw ValidationException::withMessages([
-                'email' => ['Invalid credentials']
+                'email' => ['Invalid credentials'],
             ]);
         }
+
         return $user;
     }
 
@@ -30,18 +30,14 @@ class AuthService
             'email' => $data->email,
             'hashed_password' => Hash::make($data->hashed_password),
             'is_verified' => $data->isVerified,
-            'role' => $data->role,
+            'role' => 'user',
         ]);
     }
-
 
     public function updateUser(User $user, UpdateUserData $data): User
     {
         $user->updateQuietly($data->toArray());
-        $payload = $data->toArray();
 
-        $user->updateQuietly($payload);
-        
         return $user->refresh();
     }
 

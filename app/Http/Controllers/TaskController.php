@@ -29,9 +29,13 @@ class TaskController extends Controller
         private TaskService $taskService
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        return TaskResource::collection(Task::all());
+        $user = $request->user();
+
+        $tasks = $user->role === 'admin' ? Task::query() : $user->tasks();
+
+        return TaskResource::collection($tasks->get());
     }
 
     /**
