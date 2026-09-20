@@ -7,7 +7,7 @@ class CreateUserData
     public function __construct(
         public string $username,
         public string $email,
-        public string $hashed_password,
+        public string $password,
         public bool $isVerified,
         public string $role,
     ) {}
@@ -17,7 +17,7 @@ class CreateUserData
         return new self(
             username: $data['username'],
             email: $data['email'],
-            hashed_password: $data['hashed_password'],
+            password: $data['password'],
             isVerified: (bool) ($data['is_verified'] ?? false),
             role: $data['role'] ?? 'user',
         );

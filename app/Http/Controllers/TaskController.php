@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\CreateTaskData;
-use App\DTO\UpdateTaskData;
+use App\DTO\Task\CreateTaskData;
+use App\DTO\Task\UpdateTaskData;
 use App\Http\Requests\Task\CreateTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
-use App\Http\Resources\TaskResource;
+use App\Http\Resources\Task\TaskResource;
 use App\Models\Task;
-use App\Service\TaskService;
+use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

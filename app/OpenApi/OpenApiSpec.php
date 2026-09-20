@@ -10,7 +10,7 @@ namespace App\OpenApi;
  * )
  *
  * @OA\Server(
- *     url="http://127.0.0.1/api",
+ *     url="http://127.0.0.1:8000/api",
  *     description="Local API Server"
  * )
  */

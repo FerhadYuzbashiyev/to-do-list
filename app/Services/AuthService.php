@@ -28,7 +28,7 @@ class AuthService
         return User::create([
             'username' => $data->username,
             'email' => $data->email,
-            'hashed_password' => Hash::make($data->hashed_password),
+            'hashed_password' => Hash::make($data->password),
             'is_verified' => $data->isVerified,
             'role' => 'user',
         ]);

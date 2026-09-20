@@ -12,25 +12,321 @@
         }
     ],
     "paths": {
+        "/auth/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register user and send OTP",
+                "operationId": "582fd41ee01731cdbcf6a15a52cef13f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "john_doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "OTP sent"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login and send OTP",
+                "operationId": "c48b005b7a0c138556843f55db8ecf29",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "john@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP sent"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/auth/verify-otp": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify OTP and receive access token",
+                "operationId": "3092a3781de69345735458e488cf4312",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "user_id",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "1234"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OTP verified successfully"
+                    },
+                    "422": {
+                        "description": "Invalid or expired OTP"
+                    }
+                }
+            }
+        },
+        "/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get current authenticated user",
+                "operationId": "a75bc1ccc195bd340e0b342c7b103ed7",
+                "responses": {
+                    "200": {
+                        "description": "Current user profile"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout current user",
+                "operationId": "d504f838f8f80b1f5aeadeec0fecd13a",
+                "responses": {
+                    "200": {
+                        "description": "Logged out successfully"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/update": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Update current user",
+                "operationId": "f6d91231a675e5aa2a972e6f65d75a69",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "new_username"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "new@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "newpassword123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User updated"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/auth/delete": {
+            "delete": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Delete current user",
+                "operationId": "a9e051ccb68bb4b384ff0d93fab8bc82",
+                "responses": {
+                    "204": {
+                        "description": "User deleted"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/admin/users/{user}": {
+            "delete": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Admin deletes user",
+                "operationId": "0d7bb17658f3af4068a56791c4957507",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "description": "User ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "User deleted"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/tasks": {
             "get": {
                 "tags": [
                     "Tasks"
                 ],
-                "summary": "Get all tasks",
-                "operationId": "26e4fc9cc0e530d38982b002eeafecf5",
+                "summary": "Get tasks",
+                "operationId": "35f466c8a68d7f02611b23eb3720873d",
                 "responses": {
                     "200": {
                         "description": "List of tasks"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
                     "Tasks"
                 ],
                 "summary": "Create task",
-                "operationId": "9b481c0ed5fdfa1a592d70ba39a348ee",
+                "operationId": "d8f03d36eb6bc27f59b1aadeab9e6d56",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -42,7 +338,8 @@
                                 ],
                                 "properties": {
                                     "title": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 255
                                     },
                                     "description": {
                                         "type": "string"
@@ -55,9 +352,20 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Created"
+                        "description": "Task created"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/tasks/{task}": {
@@ -66,7 +374,7 @@
                     "Tasks"
                 ],
                 "summary": "Get task",
-                "operationId": "2d3bd1c8c8bbb942e64655b95d2ccd31",
+                "operationId": "70ff501e5df98aee1893265928045767",
                 "parameters": [
                     {
                         "name": "task",
@@ -81,15 +389,26 @@
                 "responses": {
                     "200": {
                         "description": "Task"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Task not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
                     "Tasks"
                 ],
                 "summary": "Update task",
-                "operationId": "72424efd50f1b651e3488b9dd24e5a66",
+                "operationId": "f20106ed4bb9b732f7f70533f7e7091a",
                 "parameters": [
                     {
                         "name": "task",
@@ -109,12 +428,10 @@
                                 "properties": {
                                     "title": {
                                         "type": "string",
-                                        "maxLength": 255,
-                                        "example": "Updated task"
+                                        "maxLength": 255
                                     },
                                     "description": {
-                                        "type": "string",
-                                        "example": "Updated description"
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -126,20 +443,28 @@
                     "200": {
                         "description": "Task updated successfully"
                     },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "404": {
                         "description": "Task not found"
                     },
                     "422": {
                         "description": "Validation error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
                     "Tasks"
                 ],
                 "summary": "Delete task",
-                "operationId": "2e76d38ee629d5be516c498ed02ff818",
+                "operationId": "a11e8ca50e17d02c2b1a418cabb96567",
                 "parameters": [
                     {
                         "name": "task",
@@ -155,10 +480,18 @@
                     "204": {
                         "description": "Task deleted successfully"
                     },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "404": {
                         "description": "Task not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/tasks/{task}/complete": {
@@ -167,7 +500,7 @@
                     "Tasks"
                 ],
                 "summary": "Complete task",
-                "operationId": "ba23a0dcc384984d517973672db16cab",
+                "operationId": "3aa6c1cf969d96847edade86d66b3ff0",
                 "parameters": [
                     {
                         "name": "task",
@@ -183,17 +516,39 @@
                     "200": {
                         "description": "Task completed successfully"
                     },
+                    "403": {
+                        "description": "Forbidden"
+                    },
                     "404": {
                         "description": "Task not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         }
     },
     "tags": [
         {
+            "name": "Auth",
+            "description": "Auth"
+        },
+        {
             "name": "Tasks",
             "description": "Tasks"
         }
-    ]
+    ],
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
+            }
+        }
+    }
 }

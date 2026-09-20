@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 
-use App\DTO\CreateTaskData;
-use App\DTO\UpdateTaskData;
+use App\DTO\Task\CreateTaskData;
+use App\DTO\Task\UpdateTaskData;
 use App\Models\Task;
 use App\Models\User;
 
