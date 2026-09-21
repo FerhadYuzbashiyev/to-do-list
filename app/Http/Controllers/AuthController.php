@@ -96,14 +96,17 @@ class AuthController extends Controller
 
     public function update(UpdateUserRequest $request)
     {
-        $dto = UpdateUserData::fromValidatedPayload(
-            $request->validated()
-        );
+        $user = $request->user();
 
-        $updatedUser = $this->authService->updateUser(
-            $request->user(),
-            $dto
-        );
+        $oldEmail = $user->email;
+
+        $dto = UpdateUserData::fromValidatedPayload($request->validated());
+
+        $updatedUser = $this->authService->updateUser($user, $dto);
+
+        if ($updatedUser->email !== $oldEmail) {
+            $this->otpService->create_otp_and_send($updatedUser);
+        }
 
         return new UserResource($updatedUser);
     }

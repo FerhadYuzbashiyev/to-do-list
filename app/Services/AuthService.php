@@ -36,7 +36,15 @@ class AuthService
 
     public function updateUser(User $user, UpdateUserData $data): User
     {
-        $user->updateQuietly($data->toArray());
+        $payload = $data->toArray();
+
+        $emailChanged = isset($payload['email']) && $payload['email'] !== $user->email;
+
+        if ($emailChanged) {
+            $payload['is_verified'] = false;
+        }
+
+        $user->updateQuietly($payload);
 
         return $user->refresh();
     }

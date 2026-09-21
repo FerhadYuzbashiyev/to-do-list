@@ -56,10 +56,7 @@ class TaskController extends Controller
 
         $dto = UpdateTaskData::fromArray($request);
 
-        $updatedTask = $this->taskService->updateTask(
-            $task,
-            $dto
-        );
+        $updatedTask = $this->taskService->updateTask($task, $dto);
 
         return new TaskResource($updatedTask);
     }
