@@ -38,7 +38,13 @@ class AuthService
     {
         $payload = $data->toArray();
 
-        $emailChanged = isset($payload['email']) && $payload['email'] !== $user->email;
+        $emailChanged = isset($payload['email'])
+            && $payload['email'] !== $user->email;
+
+        if (isset($payload['password'])) {
+            $payload['hashed_password'] = Hash::make($payload['password']);
+            unset($payload['password']);
+        }
 
         if ($emailChanged) {
             $payload['is_verified'] = false;

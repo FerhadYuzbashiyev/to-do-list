@@ -100,9 +100,14 @@ class AuthController extends Controller
 
         $oldEmail = $user->email;
 
-        $dto = UpdateUserData::fromValidatedPayload($request->validated());
+        $dto = UpdateUserData::fromValidatedPayload(
+            $request->validated()
+        );
 
-        $updatedUser = $this->authService->updateUser($user, $dto);
+        $updatedUser = $this->authService->updateUser(
+            $user,
+            $dto
+        );
 
         if ($updatedUser->email !== $oldEmail) {
             $this->otpService->create_otp_and_send($updatedUser);
