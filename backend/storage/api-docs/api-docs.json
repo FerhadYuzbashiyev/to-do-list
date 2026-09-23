@@ -403,12 +403,12 @@
                     }
                 ]
             },
-            "post": {
+            "put": {
                 "tags": [
                     "Tasks"
                 ],
                 "summary": "Update task",
-                "operationId": "f20106ed4bb9b732f7f70533f7e7091a",
+                "operationId": "ae4852b114874704400c07cc34c59169",
                 "parameters": [
                     {
                         "name": "task",

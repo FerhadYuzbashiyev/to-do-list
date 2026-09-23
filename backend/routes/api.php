@@ -17,7 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('tasks', TaskController::class)->only(['index', 'store', 'show', 'destroy']);
 
-    Route::post('tasks/{task}', [TaskController::class, 'update']);
+    Route::put('tasks/{task}', [TaskController::class, 'update']);
     Route::post('tasks/{task}/complete', [TaskController::class, 'complete']);
 });
 

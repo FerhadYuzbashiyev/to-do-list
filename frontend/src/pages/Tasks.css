@@ -1,0 +1,111 @@
+.tasks-page {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.tasks-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.tasks-header h1 {
+    margin-bottom: 8px;
+}
+
+.tasks-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.task-card {
+    padding: 20px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    min-height: 210px;
+    display: flex;
+    flex-direction: column;
+}
+
+.task-card.completed {
+    opacity: 1;
+    background: #ecfdf5;
+    border-color: #86efac;
+}
+
+.task-card h3 {
+    margin: 0 0 10px;
+}
+
+.task-description {
+    color: #4b5563;
+}
+
+.task-status {
+    font-weight: 600;
+}
+
+.status-active {
+    color: #2563eb;
+}
+
+.status-completed {
+    color: #16a34a;
+}
+
+.task-buttons {
+    display: flex;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 16px;
+}
+
+button {
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    opacity: 0.85;
+}
+
+.button-complete {
+    background: #16a34a;
+    color: white;
+}
+
+.button-edit {
+    background: #2563eb;
+    color: white;
+}
+
+.button-delete {
+    background: #dc2626;
+    color: white;
+}
+
+.task-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.task-form input,
+.task-form textarea {
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font: inherit;
+}

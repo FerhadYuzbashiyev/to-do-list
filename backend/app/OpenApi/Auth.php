@@ -136,7 +136,7 @@ namespace App\OpenApi;
  *     )
  * )
  *
- * @OA\Post(
+ * @OA\POST(
  *     path="/auth/update",
  *     summary="Update current user",
  *     tags={"Auth"},

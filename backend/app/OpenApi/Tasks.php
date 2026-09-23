@@ -78,7 +78,7 @@ namespace App\OpenApi;
  *     )
  * )
  *
- * @OA\Post(
+ * @OA\Put(
  *     path="/tasks/{task}",
  *     summary="Update task",
  *     tags={"Tasks"},

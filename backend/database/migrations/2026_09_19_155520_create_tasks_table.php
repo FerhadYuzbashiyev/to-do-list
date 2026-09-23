@@ -16,7 +16,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('title', 255);
-            $table->string('description');
+            $table->string('description', 2000);
             $table->enum('status', ['active', 'completed']);
             $table->timestamps();
         });
